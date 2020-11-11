@@ -13,7 +13,7 @@ void setup()
     Serial.begin(115200);
     Serial.println();
 
-    blnk.blink2(300, 1200, 3);
+    blnk.blinkIrregular(300, 1200, 3);
 
     esp_err_t err = cam.setup(FRAMESIZE_QVGA, PIXFORMAT_GRAYSCALE);
     if (err != ESP_OK)
