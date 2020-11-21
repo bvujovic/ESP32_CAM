@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>WebCam Preview</title>
+    <link rel="icon" href="webcam.png" type="image/png" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        const server = 'http://192.168.0.60';
+        function refreshImage() {
+            img.onload = function () { refreshImageDelayed(); }
+            var t = new Date().getTime();
+            console.log(t);
+            img.src = server + '/preview?now=' + t;
+        }
+        function refreshImageDelayed() {
+            var val = selRefresh.value;
+            if (val == 0) // Slika se trazi na klik, ne na zadati interval.
+                return;
+            setTimeout(refreshImage, val * 1000);
+        }
+        function settings() {
+            var setts = [];
+            setts.push("res=" + res.value);
+            setts.push("bright=" + bright.value);
+            setts.push("gain=" + gain.value);
+            var s = setts.join('&');
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("GET", "/settings?" + s, true);
+            xhttp.setRequestHeader("Content-type", "text/plain");
+            xhttp.send();
+        }
+        function readSdCard() {
+            // clear all
+            while (sd_images.options.length > 0)
+                sd_images.options.remove(0);
+            // add new
+            var c = document.createElement("option");
+            c.text = "Kiwi";
+            sd_images.options.add(c);
+        }
+        function sdImageSel() {
+            alert(sd_images.selectedIndex);
+            alert(sd_images.options[sd_images.selectedIndex].text);
+        }
+    </script>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Segoe UI', Verdana, sans-serif;
+        }
+
+        .ctrl {
+            width: 60px;
+        }
+
+        th,
+        td {
+            padding: 5px;
+        }
+
+        a {
+            color: green;
+            display: block;
+        }
+
+        div {
+            float: left;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>WebCam Preview</h1>
+
+    <div>
+        <h2>Cam Settings</h2>
+        <table>
+            <tr>
+                <td>Name</td>
+                <td>Value</td>
+            </tr>
+            <tr>
+                <td>Resolution</td>
+                <td>
+                    <select id="res">
+                        <option value="10">UXGA(1600x1200)</option>
+                        <option value="9">SXGA(1280x1024)</option>
+                        <option value="8">XGA(1024x768)</option>
+                        <option value="7">SVGA(800x600)</option>
+                        <option value="6">VGA(640x480)</option>
+                        <option value="5">CIF(400x296)</option>
+                        <option value="4" selected="selected">QVGA(320x240)</option>
+                        <option value="3">HQVGA(240x176)</option>
+                        <option value="0">QQVGA(160x120)</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Brightness</td>
+                <td>
+                    <select id="bright" class="ctrl">
+                        <option value="-2">-2</option>
+                        <option value="-1">-1</option>
+                        <option value="0" selected="selected">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Gain Ceiling</td>
+                <td>
+                    <select id="gain" class="ctrl">
+                        <option value="0" selected="selected">2</option>
+                        <option value="1">4</option>
+                        <option value="2">8</option>
+                        <option value="3">16</option>
+                        <option value="4">32</option>
+                        <option value="5">64</option>
+                        <option value="6">128</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><button onclick="settings()" class="ctrl">Ok</button></td>
+            </tr>
+        </table>
+    </div>
+
+    <div>
+        <h2>Image Preview</h2>
+        <select id="selRefresh" onchange="refreshImageDelayed()">
+            <option value="0">On Click</option>
+            <option value="3">3 seconds</option>
+            <option value="5">5 seconds</option>
+            <option value="10">10 seconds</option>
+            <option value="15">15 seconds</option>
+            <option value="30">30 seconds</option>
+            <option value="60">60 seconds</option>
+        </select>
+        <button onclick="selRefresh.value = 0; refreshImage();">Refresh</button>
+        <br>
+        <img id='img' src="webcam.png" />
+    </div>
+
+    <div style="clear: both;">
+        <h2>SD Card</h2>
+        <button onclick="readSdCard();">Read SD card</button>
+        <br>
+        <select id="sd_images" size="5" style="width: 200px;" onchange="sdImageSel()">
+            <option value="-2">img001.jpg</option>
+            <option value="-1">img001.jpg</option>
+            <option value="0">img001.jpg</option>
+        </select>
+    </div>
+</body>
+
+</html>
