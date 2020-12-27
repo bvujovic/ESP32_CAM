@@ -10,8 +10,9 @@ Blinky led = Blinky::createESP();
 #include "SD_MMC.h" // SD Card ESP32
 
 // YOU MUST ENABLE less secure app option https://myaccount.google.com/lesssecureapps?pli=1
-#define emailSenderAccount "advokatandrija@gmail.com"
-#define emailSenderPassword "advokata"
+// #define emailSenderAccount "advokatandrija@gmail.com"
+// #define emailSenderPassword "advokata"
+#include "CredGmailAdvokat.h"
 #define smtpServer "smtp.gmail.com"
 #define smtpServerPort 465
 #define emailSubject "ESP32-CAM Photo"
@@ -29,9 +30,9 @@ void sendCallback(SendStatus msg) { Serial.println(msg.info()); }
 void sendPhoto()
 {
     Serial.println("Sending email...");
-    smtpData.setLogin(smtpServer, smtpServerPort, emailSenderAccount, emailSenderPassword);
+    smtpData.setLogin(smtpServer, smtpServerPort, gmailAdvokatUser, gmailAdvokatPass);
 
-    smtpData.setSender("ESP32-CAM", emailSenderAccount);
+    smtpData.setSender("ESP32-CAM", gmailAdvokatUser);
     smtpData.setPriority(3); // Set Email priority or importance High, Normal, Low or 1 to 5 (1 is highest)
     smtpData.setSubject(emailSubject);
     smtpData.setMessage("<h2>Photo captured with ESP32-CAM and attached in this email.</h2>", true);
