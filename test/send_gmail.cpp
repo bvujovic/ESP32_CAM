@@ -10,8 +10,6 @@ Blinky led = Blinky::createESP();
 #include "SD_MMC.h" // SD Card ESP32
 
 // YOU MUST ENABLE less secure app option https://myaccount.google.com/lesssecureapps?pli=1
-// #define emailSenderAccount "advokatandrija@gmail.com"
-// #define emailSenderPassword "advokata"
 #include "CredGmailAdvokat.h"
 #define smtpServer "smtp.gmail.com"
 #define smtpServerPort 465

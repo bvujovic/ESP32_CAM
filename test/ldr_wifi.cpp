@@ -11,7 +11,7 @@ const int pinLdr = 13;
 #include "time.h"
 #include "lwip/apps/sntp.h"
 struct tm ti; // Tekuce/trenutno vreme.
-RTC_DATA_ATTR int cntNoInitTime = 2;
+RTC_DATA_ATTR int cntNoInitTime = 1;
 tm tiInit; // Vreme poslednjeg uzimanja tacnog vremena sa interneta.
 // za doradu pogledati: https://github.com/SensorsIot/NTP-time-for-ESP8266-and-ESP32/blob/master/NTP_Example/NTP_Example.ino
 
@@ -65,10 +65,45 @@ const int pinLed = 33;
 
 void statusLedON(bool on) { digitalWrite(pinLed, !on); }
 
+// void WiFi_Off(int maxRetries = 20)
+// {
+//     Serial.println("WiFi_Off");
+//     WiFi.disconnect(true);
+//     WiFi.mode(WIFI_OFF);
+//     // WiFi.setSleep()
+//     int cntRetries = 0;
+//     while ((WiFi.status() == WL_CONNECTED) && (cntRetries++ < maxRetries))
+//     {
+//         delay(100);
+//         Serial.print(".");
+//     }
+// }
+
+#include "driver/adc.h"
+#include <esp_wifi.h>
+#include <esp_bt.h>
+void WiFi_Off2()
+{
+    Serial.println("Going to sleep...");
+    WiFi.disconnect(true);
+    WiFi.mode(WIFI_OFF);
+    btStop();
+
+    Serial.println(0);
+    adc_power_off();
+    Serial.println(1);
+    esp_wifi_stop();
+    Serial.println(2);
+    esp_bt_controller_disable();
+    Serial.println(3);
+    delay(2000);
+}
+
 void setup()
 {
     Serial.begin(115200);
     Serial.println();
+    adc_power_on();
     pinMode(pinLed, OUTPUT);
     statusLedON(true);
 
@@ -97,11 +132,15 @@ void setup()
 
         //* LDR na pinu 13 radi dobro dok se ESP ne konektuje ne WiFi.
         //* Ovo je neuspeo pokusaj da se ukine taj problem.
-        WiFi.disconnect();
-        WiFi.mode(WIFI_OFF);
-        btStop();
-        delay(100);
-        Serial.println("LDR2: " + String(analogRead(pinLdr)));
+        // Serial.println("disconnect: " + String(WiFi.disconnect(true)));
+        // WiFi.mode(WIFI_OFF);
+        // Serial.println("wifi mode: " + String(WiFi.getMode()));
+        // btStop();
+        // delay(1000);
+
+        WiFi_Off2();
+
+        // Serial.println("LDR2: " + String(analogRead(pinLdr)));
         // esp_wifi_disconnect(); // break connection to AP
         // esp_wifi_stop();       // shut down the wifi radio
         // esp_wifi_deinit();     // release wifi resources
