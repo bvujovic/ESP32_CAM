@@ -16,7 +16,7 @@ void setup()
     // ++bootCount;
     // Serial.println("Boot number: " + String(bootCount));
 
-    led.ledOn(true);
+    led.on();
     delay(1000);
 
     // if (!SD_MMC.begin())
@@ -34,7 +34,7 @@ void setup()
     SD_MMC.end();
 
     delay(1000);
-    led.ledOn(false);
+    led.off();
     esp_sleep_enable_ext0_wakeup(GPIO_NUM_13, 1);
     delay(1000);
     esp_deep_sleep_start();

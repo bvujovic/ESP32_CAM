@@ -3,16 +3,12 @@
 #include <Arduino.h>
 
 #include "WiFiServerBasics.h"
-#include "EasyINI.h"
-EasyINI *ei;
+// #include "SpiffsUtils.h"
 
-#include "TimeESP3.h"
-RTC_DATA_ATTR TimeESP3 timer;
+#include "SleepTimer.h"
+RTC_DATA_ATTR SleepTimer timer(120, 4, -150);
 struct tm t;
 
-RTC_DATA_ATTR int cnt = 0;
-
-#define uS_TO_S 1000000
 const int pinLed = 33;
 
 void statusLedON(bool on) { digitalWrite(pinLed, !on); }
@@ -21,33 +17,26 @@ void setup()
 {
     Serial.begin(115200);
     Serial.println();
-    Serial.println("Counter: " + String(cnt));
+    if (timer.isInitialized())
+        Serial.printf("Counter: %d/%d\n", timer.getCountNetTimeCheck(), timer.getNetTimeCheck());
+    // SPIFFS.begin();
     pinMode(pinLed, OUTPUT);
     statusLedON(true);
 
-    if (!timer.isInitialized())
-    {
-        ei = new EasyINI("/times.log");
-        ei->open(FMOD_READ);
-        timer.setCoefError(ei->getInt("coefError"));
-        Serial.println("loaded coefError: " + String(timer.getCoefError()));
-        ei->close();
-    }
-    if (cnt % 5 == 0)
+    if (timer.shouldGetNetTime())
     {
         ConnectToWiFi();
         timer.getNetTime(t);
+        Serial.println("CoefError: " + String(timer.getCoefError()));
+        // SpiffsUtils::WriteFile("/times.log", String(timer.getTimerError()), "a");
     }
     else
         timer.getLocalTime(t);
+    timer.waitFor00(t);
 
-    Serial.println(String(t.tm_min) + ":" + String(t.tm_sec));
-
+    Serial.printf("%02d:%02d:%02d\n", t.tm_hour, t.tm_min, t.tm_sec);
     statusLedON(false);
-
-    cnt++;
-    Serial.println("sleep...");
-    esp_sleep_enable_timer_wakeup(uS_TO_S * 60 * 1);
+    esp_sleep_enable_timer_wakeup(timer.usecToSleep(t));
     esp_deep_sleep_start();
 }
 

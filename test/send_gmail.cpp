@@ -5,7 +5,7 @@
 #include "WiFiServerBasics.h"
 
 #include <Blinky.h>
-Blinky led = Blinky::createESP();
+Blinky led = Blinky::create();
 
 #include "SD_MMC.h" // SD Card ESP32
 

@@ -5,6 +5,8 @@
         "algorithm": "cpp",
         "string": "cpp",
         "functional": "cpp",
-        "*.tpp": "cpp"
+        "*.tpp": "cpp",
+        "istream": "cpp",
+        "ostream": "cpp"
     }
 }
