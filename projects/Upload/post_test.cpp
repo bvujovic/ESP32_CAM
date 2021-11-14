@@ -13,9 +13,8 @@ Blinky led = Blinky::create();
 
 #include <AiThinkerCam.h>
 AiThinkerCam cam;
-uint x;
-const int timerInterval = 20000; // time between each HTTP POST image
-ulong previousMillis = 0;        // last time image was sent
+const ulong timerInterval = 30000; // time between each HTTP POST image
+ulong msPrevious = 0;              // last time image was sent
 
 void sendPhoto();
 
@@ -38,17 +37,17 @@ void setup()
     client.setInsecure();
     sendPhoto();
 
-    led.blink(250, 0);
     led.printBlink("dosta zajebancije!");
 }
 
 void loop()
 {
-    unsigned long currentMillis = millis();
-    if (currentMillis - previousMillis >= timerInterval)
+    ulong ms = millis();
+    //B if (currentMillis - previousMillis >= timerInterval)
+    if (ms > msPrevious + timerInterval)
     {
+        msPrevious = ms;
         sendPhoto();
-        previousMillis = currentMillis;
     }
 }
 
@@ -70,8 +69,10 @@ void sendPhoto()
     String head = "--boundary\r\n"
                   //   "Content-Disposition: form-data; name=\"Name\"\r\n\r\nt.txt\r\n--boundary\r\n"
                   //   "Content-Disposition: form-data; name=\"File\"; filename=\"zec.txt\"\r\n\r\n";
-                  "Content-Disposition: form-data; name=\"Name\"\r\n\r\nzec.jpg\r\n--boundary\r\n"
-                  "Content-Disposition: form-data; name=\"File\"; filename=\"zec.jpg\"\r\n\r\n";
+                  //   "Content-Disposition: form-data; name=\"Name\"\r\n\r\nzec.jpg\r\n--boundary\r\n"
+                  "Content-Disposition: form-data; name=\"Camera\"\r\n\r\nPost Test\r\n--boundary\r\n"
+                  "Content-Disposition: form-data; name=\"File\"; filename=\"cam.jpg\"\r\n"
+                  "Content-Type: image/jpeg\r\n\r\n";
     // --boundary  Content-Disposition: form-data; name="Name"    test.jpg  --boundary  Content-Disposition: form-data; name="File"; filename="test.jpg"
     String tail = "\r\n--boundary--\r\n";
 

@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 #include "SleepTimer.h"
-RTC_DATA_ATTR SleepTimer timer(5 * 60, 3, -150);
+RTC_DATA_ATTR SleepTimer timer(1 * 60, 4, -150);
 struct tm t;
 
 #include <WiFiServerBasics.h>
@@ -41,8 +41,11 @@ void loop()
     else
         timer.getLocalTime(t);
 
-    Serial.println(&t, "%A, %B %d %Y %H:%M:%S");
+    // Serial.println(&t, "%A, %B %d %Y %H:%M:%S");
+    // Serial.printf("%04d-%02d-%02d\n", 1900 + t.tm_year, 1 + t.tm_mon, t.tm_mday);
+    Serial.printf("%04d-%02d-%02d\n", t.tm_year, t.tm_mon, t.tm_mday);
+    Serial.printf("%02d:%02d:%02d\n", t.tm_hour, t.tm_min, t.tm_sec);
     timer.waitFor00(t);
-    Serial.println(&t, "%A, %B %d %Y %H:%M:%S");
+    Serial.printf("%02d:%02d:%02d\n", t.tm_hour, t.tm_min, t.tm_sec);
     goToSleep();
 }
